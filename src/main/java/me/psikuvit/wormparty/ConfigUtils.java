@@ -7,15 +7,12 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.io.IOException;
 
 public class ConfigUtils {
 
-    private final File configFile;
     private final FileConfiguration config;
 
     public ConfigUtils(File configFile) {
-        this.configFile = configFile;
         this.config = YamlConfiguration.loadConfiguration(configFile);
     }
 

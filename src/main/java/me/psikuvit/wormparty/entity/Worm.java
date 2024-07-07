@@ -91,9 +91,6 @@ public class Worm extends EntityPig {
         return true;
     }
 
-    public double getWormHealth() {
-        return wormHealth;
-    }
     public PersistentDataContainer getWormPDC() {
         return wormPDC;
     }
