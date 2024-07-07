@@ -1,0 +1,15 @@
+waitingLoc:
+  world: "world"
+  x: -29
+  y: 63
+  z: 181
+
+mapLoc:
+  world: "world"
+  x: -24
+  y: 64
+  z: 189
+
+minimumToStart: 10
+
+timeTillPvP: 1200
