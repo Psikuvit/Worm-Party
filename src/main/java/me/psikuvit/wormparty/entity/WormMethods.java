@@ -1,6 +1,6 @@
-package me.psikuvit.wormparty;
+package me.psikuvit.wormparty.entity;
 
-import me.psikuvit.wormparty.entity.Worm;
+import me.psikuvit.wormparty.WormParty;
 import net.minecraft.server.v1_16_R3.WorldServer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

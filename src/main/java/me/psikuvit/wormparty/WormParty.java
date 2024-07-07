@@ -2,6 +2,7 @@ package me.psikuvit.wormparty;
 
 import me.psikuvit.wormparty.arena.Arena;
 import me.psikuvit.wormparty.entity.Worm;
+import me.psikuvit.wormparty.entity.WormMethods;
 import me.psikuvit.wormparty.listener.ArenaListeners;
 import me.psikuvit.wormparty.listener.WormListeners;
 import org.bukkit.Location;

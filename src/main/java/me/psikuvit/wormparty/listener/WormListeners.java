@@ -1,6 +1,6 @@
 package me.psikuvit.wormparty.listener;
 
-import me.psikuvit.wormparty.WormMethods;
+import me.psikuvit.wormparty.entity.WormMethods;
 import me.psikuvit.wormparty.WormParty;
 import me.psikuvit.wormparty.entity.Worm;
 import org.bukkit.NamespacedKey;
