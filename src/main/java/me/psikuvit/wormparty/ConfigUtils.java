@@ -40,4 +40,12 @@ public class ConfigUtils {
         return config.getInt("minimumToStart");
     }
 
+    public String headTexture() {
+        return config.getString("worm-head-texture");
+    }
+
+    public String segmentTexture() {
+        return config.getString("worm-segment-texture");
+    }
+
 }
