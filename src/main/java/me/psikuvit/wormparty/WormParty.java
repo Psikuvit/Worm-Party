@@ -6,7 +6,11 @@ import me.psikuvit.wormparty.entity.WormMethods;
 import me.psikuvit.wormparty.listener.ArenaListeners;
 import me.psikuvit.wormparty.listener.WormListeners;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -17,11 +21,13 @@ public final class WormParty extends JavaPlugin {
     private WormMethods wormMethods;
     private ConfigUtils configUtils;
     private Arena arena;
+    private ItemStack wormPetter;
 
     @Override
     public void onEnable() {
         // Plugin startup logic
         key = new NamespacedKey(this, "worm");
+        registerRecipe();
         wormMethods = new WormMethods(this);
 
         saveDefaultConfig();
@@ -47,7 +53,6 @@ public final class WormParty extends JavaPlugin {
         wormMethods.getWorms().clear();
     }
 
-
     public NamespacedKey getKey() {
         return key;
     }
@@ -62,5 +67,29 @@ public final class WormParty extends JavaPlugin {
 
     public Arena getArena() {
         return arena;
+    }
+
+
+    public void registerRecipe() {
+        NamespacedKey recipeKey = new NamespacedKey(this, "worm_mount");
+
+        wormPetter = new ItemStack(Material.STICK);
+        ItemMeta itemMeta = wormPetter.getItemMeta();
+        itemMeta.setDisplayName(Utils.color("&eWorm Petter"));
+        wormPetter.setItemMeta(itemMeta);
+
+        ShapedRecipe recipe = new ShapedRecipe(recipeKey, wormPetter);
+
+        recipe.shape("AAA", "CBC", "AAA");
+
+        recipe.setIngredient('A', Material.GOLD_INGOT);
+        recipe.setIngredient('B', Material.STICK);
+        recipe.setIngredient('C', Material.DIAMOND);
+
+        getServer().addRecipe(recipe);
+    }
+
+    public ItemStack getWormPetter() {
+        return wormPetter;
     }
 }
