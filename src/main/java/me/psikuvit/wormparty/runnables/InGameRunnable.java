@@ -14,10 +14,12 @@ public class InGameRunnable extends BukkitRunnable {
     private final Arena arena;
     private final int timeTillPvP;
     private int timer;
+    private boolean pvp;
 
     public InGameRunnable(Arena arena) {
        this.arena = arena;
        this.timeTillPvP = arena.getTimeTillPvP();
+       this.pvp = false;
        arena.setGameState(GameState.INGAME);
        setupBorder();
        arena.getPlayers().forEach(player -> {
@@ -37,10 +39,15 @@ public class InGameRunnable extends BukkitRunnable {
             Scoreboard updatedScoreboard = arena.getScoreboard().editLine(3, "&bTimer: &7" + Utils.secToMin(timer)).build();
             arena.getPlayers().forEach(player -> player.setScoreboard(updatedScoreboard));
 
+            if (!pvp) {
+                Bukkit.getOnlinePlayers().forEach(player -> Utils.sendTitle(player, "&cPvP is now on!", "&bbe ready.", 10, 200, 10));
+                pvp = true;
+            }
+
         }
         if (arena.getPlayers().size() == 1) {
             arena.setGameState(GameState.END);
-            Bukkit.getOnlinePlayers().forEach(player -> Utils.sendTitle(player, arena.getPlayers().get(0).getName(), "&bIs the WINNER!!", 20, 1200, 20));
+            Bukkit.getOnlinePlayers().forEach(player -> Utils.sendTitle(player, "&7" + arena.getPlayers().get(0).getName(), "&bIs the WINNER!!", 20, 1200, 20));
             cancel();
         }
 
