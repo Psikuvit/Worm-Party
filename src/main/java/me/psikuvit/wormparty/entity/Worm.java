@@ -80,13 +80,16 @@ public class Worm extends EntityPig {
         this.goalSelector.a(2, new PathfinderGoalMeleeAttack(this, 1.0D, true));
         this.goalSelector.a(7, new PathfinderGoalRandomStrollLand(this, 1.0D));
 
-        this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget<>(this, EntityHuman.class, true));
-        this.targetSelector.a(3, new PathfinderGoalNearestAttackableTarget<>(this, EntityPig.class, true));
+        this.targetSelector.a(2, new PassengerPathfinderGoalNearestAttackableTarget<>(this, EntityHuman.class, true));
+        this.targetSelector.a(3, new PassengerPathfinderGoalNearestAttackableTarget<>(this, EntityPig.class, true));
     }
 
     //Handles worm damage
     @Override
     public boolean attackEntity(Entity entity) {
+        if (this.getPassengers().contains(entity)) {
+            return false; // Don't attack if the entity is a passenger
+        }
         entity.damageEntity(DamageSource.mobAttack(this), 8);
         return true;
     }
@@ -109,9 +112,7 @@ public class Worm extends EntityPig {
             segment.setBasePlate(false);
             segment.setSmall(true);
             segment.setInvisible(true);
-            String url = (i == 0)
-                    ? "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGYwM2FkOTYwOTJmM2Y3ODk5MDI0MzY3MDljZGY2OWRlNmI3MjdjMTIxYjNjMmRhZWY5ZmZhMWNjYWVkMTg2YyJ9fX0="
-                    : "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2I0MzU0MTUxN2RkYTE4NjliOGMzOTBlZDRmZTViNWRmMjc4OTYxMDhlNDY2ZjAwYzE4NTdkZTdmNDJiMGUwZSJ9fX0=";
+            String url = (i == 0) ? plugin.getConfigUtils().headTexture() : plugin.getConfigUtils().segmentTexture();
 
             segment.getEquipment().setHelmet(Utils.getCustomSkull(url));
 
@@ -166,7 +167,8 @@ public class Worm extends EntityPig {
     }
 
     public void killWorm() {
-        this.killEntity();
+        this.die();
         segments.forEach(org.bukkit.entity.Entity::remove);
+        currentLocation.getWorld().dropItemNaturally(currentLocation, Utils.randomReward());
     }
 }
