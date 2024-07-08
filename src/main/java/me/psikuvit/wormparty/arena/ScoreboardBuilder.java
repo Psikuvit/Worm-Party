@@ -27,12 +27,19 @@ public class ScoreboardBuilder {
         this.title = Utils.color(title);
         return this;
     }
+
     public ScoreboardBuilder setLines(String... lines) {
         this.lines = Arrays.asList(lines);
         return this;
     }
+
     public ScoreboardBuilder editLine(int line, String newLine) {
         this.lines.set(line, newLine);
+        return this;
+    }
+
+    public ScoreboardBuilder addLine(String newLine) {
+        this.lines.add(newLine);
         return this;
     }
 
