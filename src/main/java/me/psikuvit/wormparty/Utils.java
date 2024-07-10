@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -64,11 +65,11 @@ public class Utils {
     }
 
     public static List<ItemStack> rewards() {
-        ItemStack helmet = new ItemStack(Material.NETHERITE_HELMET);
-        ItemStack chestplate = new ItemStack(Material.NETHERITE_CHESTPLATE);
-        ItemStack leggings = new ItemStack(Material.NETHERITE_LEGGINGS);
-        ItemStack boots = new ItemStack(Material.NETHERITE_HELMET);
-        List<ItemStack> armors = List.of(helmet, chestplate, leggings, boots);
+        ItemStack helmet = new ItemStack(Material.DIAMOND_HELMET);
+        ItemStack chestplate = new ItemStack(Material.DIAMOND_CHESTPLATE);
+        ItemStack leggings = new ItemStack(Material.DIAMOND_LEGGINGS);
+        ItemStack boots = new ItemStack(Material.DIAMOND_HELMET);
+        List<ItemStack> armors = Arrays.asList(helmet, chestplate, leggings, boots);
         armors.forEach(armor -> {
             ItemMeta itemMeta = armor.getItemMeta();
             itemMeta.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 5, true);
@@ -76,7 +77,7 @@ public class Utils {
             armor.setItemMeta(itemMeta);
 
         });
-        ItemStack sword = new ItemStack(Material.NETHERITE_SWORD);
+        ItemStack sword = new ItemStack(Material.DIAMOND_SWORD);
         ItemMeta swordMeta = sword.getItemMeta();
         swordMeta.addEnchant(Enchantment.DAMAGE_ALL, 5, true);
         sword.setItemMeta(swordMeta);
@@ -86,7 +87,7 @@ public class Utils {
         bowMeta.addEnchant(Enchantment.ARROW_DAMAGE, 5, true);
         bow.setItemMeta(bowMeta);
 
-        ItemStack apples = new ItemStack(Material.ENCHANTED_GOLDEN_APPLE);
+        ItemStack apples = new ItemStack(Material.GOLDEN_APPLE);
         ItemStack enderpearls = new ItemStack(Material.ENDER_PEARL, 16);
 
         List<ItemStack> rewards = new ArrayList<>(armors);

@@ -1,11 +1,8 @@
 package me.psikuvit.wormparty;
 
-import me.psikuvit.wormparty.arena.Arena;
 import me.psikuvit.wormparty.entity.Worm;
 import me.psikuvit.wormparty.entity.WormMethods;
-import me.psikuvit.wormparty.listener.ArenaListeners;
 import me.psikuvit.wormparty.listener.WormListeners;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -20,7 +17,6 @@ public final class WormParty extends JavaPlugin {
     private NamespacedKey key;
     private WormMethods wormMethods;
     private ConfigUtils configUtils;
-    private Arena arena;
     private ItemStack wormPetter;
 
     @Override
@@ -36,13 +32,6 @@ public final class WormParty extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(
                 new WormListeners(this, wormMethods), this);
-        getServer().getPluginManager().registerEvents(new ArenaListeners(this), this);
-
-        Location waitingLoc = configUtils.waitingLoc();
-        Location mapLoc = configUtils.mapLoc();
-        int minToStart = configUtils.minToStart();
-
-        arena = new Arena(this, waitingLoc, mapLoc, minToStart);
 
     }
 
@@ -65,9 +54,6 @@ public final class WormParty extends JavaPlugin {
         return configUtils;
     }
 
-    public Arena getArena() {
-        return arena;
-    }
 
 
     public void registerRecipe() {

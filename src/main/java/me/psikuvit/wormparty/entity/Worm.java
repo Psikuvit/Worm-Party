@@ -10,7 +10,6 @@ import net.minecraft.server.v1_16_R3.EntityTypes;
 import net.minecraft.server.v1_16_R3.GenericAttributes;
 import net.minecraft.server.v1_16_R3.PathfinderGoalLookAtPlayer;
 import net.minecraft.server.v1_16_R3.PathfinderGoalMeleeAttack;
-import net.minecraft.server.v1_16_R3.PathfinderGoalNearestAttackableTarget;
 import net.minecraft.server.v1_16_R3.PathfinderGoalRandomLookaround;
 import net.minecraft.server.v1_16_R3.PathfinderGoalRandomStrollLand;
 import org.bukkit.Location;
