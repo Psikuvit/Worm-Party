@@ -3,20 +3,24 @@ package me.psikuvit.wormparty.listener;
 import me.psikuvit.wormparty.entity.WormMethods;
 import me.psikuvit.wormparty.WormParty;
 import me.psikuvit.wormparty.entity.Worm;
-import net.minecraft.server.v1_16_R3.EntityPlayer;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
+import net.minecraft.world.entity.player.Player;
+import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
+import org.bukkit.entity.Animals;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Pig;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.Random;
 import java.util.UUID;
 
 public class WormListeners implements Listener {
@@ -35,7 +39,7 @@ public class WormListeners implements Listener {
         Entity entity = event.getEntity();
         if (event.getDamager().getType() != EntityType.PLAYER) return;
 
-        if (event.getEntity().getType() == EntityType.PIG || event.getEntity().getType() == EntityType.ARMOR_STAND) {
+        if (entity instanceof Pig || entity instanceof ArmorStand) {
 
             PersistentDataContainer pdc = entity.getPersistentDataContainer();
             if (!pdc.has(plugin.getKey(), PersistentDataType.STRING)) return;
@@ -50,7 +54,7 @@ public class WormListeners implements Listener {
             event.setDamage(0);
 
             if (currentHP <= 0) {
-                wormMethods.killWorm(worm);
+                wormMethods.killWorm(worm, event.getDamager());
                 wormMethods.getWorms().remove(worm);
             } else {
                 wormMethods.updateHP(worm, currentHP);
@@ -61,7 +65,7 @@ public class WormListeners implements Listener {
     @EventHandler
     public void onDeath(EntityDeathEvent event) {
         Entity entity = event.getEntity();
-        if (entity.getType() == EntityType.PIG) {
+        if (entity instanceof Pig) {
             PersistentDataContainer pdc = entity.getPersistentDataContainer();
             if (!pdc.has(plugin.getKey(), PersistentDataType.STRING)) return;
 
@@ -71,8 +75,7 @@ public class WormListeners implements Listener {
             UUID wormID = UUID.fromString(uuid);
             Worm worm = wormMethods.getWorm(wormID);
 
-            worm.killWorm();
-            wormMethods.getWorms().remove(worm);
+            wormMethods.killWorm(worm, event.getEntity().getKiller());
 
         }
     }
@@ -87,7 +90,7 @@ public class WormListeners implements Listener {
                 return;
             }
 
-            EntityPlayer entityPlayer = ((CraftPlayer) event.getPlayer()).getHandle();
+            Player entityPlayer = ((CraftPlayer) event.getPlayer()).getHandle();
             PersistentDataContainer pdc = entity.getPersistentDataContainer();
             if (!pdc.has(plugin.getKey(), PersistentDataType.STRING)) return;
 
@@ -98,6 +101,17 @@ public class WormListeners implements Listener {
             Worm worm = wormMethods.getWorm(wormID);
 
             entityPlayer.startRiding(worm);
+        }
+    }
+
+    @EventHandler
+    public void wormSpawn(EntitySpawnEvent event) {
+        if (event.getEntity() instanceof Animals) {
+            int rnd = new Random().nextInt(2);
+            if (rnd == 0) {
+                event.setCancelled(true);
+                plugin.getWormMethods().spawnWorm(event.getLocation(), CreatureSpawnEvent.SpawnReason.DEFAULT);
+            }
         }
     }
 }

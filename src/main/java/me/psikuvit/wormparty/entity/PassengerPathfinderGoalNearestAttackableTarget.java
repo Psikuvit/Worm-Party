@@ -1,9 +1,9 @@
 package me.psikuvit.wormparty.entity;
 
-import net.minecraft.server.v1_16_R3.EntityLiving;
-import net.minecraft.server.v1_16_R3.PathfinderGoalNearestAttackableTarget;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 
-public class PassengerPathfinderGoalNearestAttackableTarget<T extends EntityLiving> extends PathfinderGoalNearestAttackableTarget<T> {
+public class PassengerPathfinderGoalNearestAttackableTarget<T extends LivingEntity> extends NearestAttackableTargetGoal<T> {
 
     private final Worm worm;
 
@@ -13,10 +13,10 @@ public class PassengerPathfinderGoalNearestAttackableTarget<T extends EntityLivi
     }
 
     @Override
-    public boolean a() {
-        if (this.e != null && worm.getPassengers().contains(this.e)) {
+    public boolean canUse() {
+        if (this.target != null && worm.getPassengers().contains(this.target)) {
             return false;
         }
-        return super.a();
+        return super.canUse();
     }
 }

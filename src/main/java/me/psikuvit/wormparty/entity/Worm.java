@@ -2,18 +2,20 @@ package me.psikuvit.wormparty.entity;
 
 import me.psikuvit.wormparty.Utils;
 import me.psikuvit.wormparty.WormParty;
-import net.minecraft.server.v1_16_R3.DamageSource;
-import net.minecraft.server.v1_16_R3.Entity;
-import net.minecraft.server.v1_16_R3.EntityHuman;
-import net.minecraft.server.v1_16_R3.EntityPig;
-import net.minecraft.server.v1_16_R3.EntityTypes;
-import net.minecraft.server.v1_16_R3.GenericAttributes;
-import net.minecraft.server.v1_16_R3.PathfinderGoalLookAtPlayer;
-import net.minecraft.server.v1_16_R3.PathfinderGoalMeleeAttack;
-import net.minecraft.server.v1_16_R3.PathfinderGoalRandomLookaround;
-import net.minecraft.server.v1_16_R3.PathfinderGoalRandomStrollLand;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.animal.Pig;
+import net.minecraft.world.entity.player.Player;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -24,7 +26,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-public class Worm extends EntityPig {
+public class Worm extends Pig {
 
     private final List<ArmorStand> segments;
     private final int segmentCount;
@@ -37,25 +39,24 @@ public class Worm extends EntityPig {
     private final PersistentDataContainer wormPDC;
     private final WormParty plugin = WormParty.getPlugin(WormParty.class);
 
-
-    public Worm(Location currentLocation, int segmentCount, double segmentSpacing, double shakeAmount, double wormHealth) {
-        super(EntityTypes.PIG, ((CraftWorld) currentLocation.getWorld()).getHandle());
+    public Worm(Location currentLocation, int segmentCount, double wormHealth) {
+        super(EntityType.PIG, ((CraftWorld) currentLocation.getWorld()).getHandle());
 
         //Initialising worm data
         this.currentLocation = currentLocation;
         this.segments = new ArrayList<>();
         this.segmentCount = segmentCount;
-        this.segmentSpacing = segmentSpacing;
-        this.shakeAmount = shakeAmount;
+        this.segmentSpacing = 0.5;
+        this.shakeAmount = 0.2;
         this.wormID = UUID.randomUUID();
         this.wormHealth = wormHealth;
         this.wormPDC = getBukkitEntity().getPersistentDataContainer();
 
         //Setting worm Attributes
         this.setBaby(true);
-        this.setPosition(currentLocation.getX(), currentLocation.getY(), currentLocation.getZ());
+        this.setPos(currentLocation.getX(), currentLocation.getY(), currentLocation.getZ());
         this.setSilent(true);
-        this.getAttributeInstance(GenericAttributes.KNOCKBACK_RESISTANCE).setValue(100);
+        this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(100);
         initSegments();
 
         //Caching worm data (UUID/HP) in a pdc
@@ -65,32 +66,38 @@ public class Worm extends EntityPig {
 
     // Handles worm movement
     @Override
-    public void movementTick() {
-        super.movementTick();
+    public void aiStep() {
+        super.aiStep();
         currentLocation = this.getBukkitEntity().getLocation();
         moveSegments();
     }
 
     //Giving the worm goals
     @Override
-    public void initPathfinder() {
-        this.goalSelector.a(8, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 4.0F));
-        this.goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
-        this.goalSelector.a(2, new PathfinderGoalMeleeAttack(this, 1.0D, true));
-        this.goalSelector.a(7, new PathfinderGoalRandomStrollLand(this, 1.0D));
+    public void registerGoals() {
+        this.goalSelector.addGoal(0, new FloatGoal(this));
+        this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 1.0D));
+        this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 6.0F));
+        this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
+        this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0D, true));
 
-        this.targetSelector.a(2, new PassengerPathfinderGoalNearestAttackableTarget<>(this, EntityHuman.class, true));
-        this.targetSelector.a(3, new PassengerPathfinderGoalNearestAttackableTarget<>(this, EntityPig.class, true));
+        this.targetSelector.addGoal(2, new PassengerPathfinderGoalNearestAttackableTarget<>(this, Player.class, true));
+        this.targetSelector.addGoal(3, new PassengerPathfinderGoalNearestAttackableTarget<>(this, Pig.class, true));
     }
 
     //Handles worm damage
     @Override
-    public boolean attackEntity(Entity entity) {
-        if (this.getPassengers().contains(entity)) {
-            return false; // Don't attack if the entity is a passenger
+    public boolean canAttack(LivingEntity target) {
+        return target instanceof Player;
+    }
+
+    @Override
+    public boolean doHurtTarget(Entity entity) {
+        boolean flag = super.doHurtTarget(entity);
+        if (flag) {
+            entity.hurt(DamageSource.mobAttack(this), 8);
         }
-        entity.damageEntity(DamageSource.mobAttack(this), 8);
-        return true;
+        return flag;
     }
 
     public PersistentDataContainer getWormPDC() {
@@ -166,7 +173,7 @@ public class Worm extends EntityPig {
     }
 
     public void killWorm() {
-        this.die();
+        this.kill();
         segments.forEach(org.bukkit.entity.Entity::remove);
         currentLocation.getWorld().dropItemNaturally(currentLocation, Utils.randomReward());
     }

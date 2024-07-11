@@ -1,7 +1,7 @@
 name: WormParty
 version: '${project.version}'
 main: me.psikuvit.wormparty.WormParty
-api-version: '1.16'
+api-version: '1.13'
 
 commands:
   worm:

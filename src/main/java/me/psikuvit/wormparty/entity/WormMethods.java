@@ -1,10 +1,14 @@
 package me.psikuvit.wormparty.entity;
 
+import me.psikuvit.wormparty.MinecraftReflection;
 import me.psikuvit.wormparty.WormParty;
-import net.minecraft.server.v1_16_R3.WorldServer;
+import me.psikuvit.wormparty.api.WormKillEvent;
+import me.psikuvit.wormparty.api.WormSpawnEvent;
+import net.minecraft.server.level.ServerLevel;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
+import org.bukkit.entity.Entity;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -44,17 +48,30 @@ public class WormMethods {
         pdc.set(plugin.getKey(), PersistentDataType.DOUBLE, newHP);
     }
 
-    public void spawnWorm(Location location) {
-        Worm customWorm = new Worm(location, 5, 0.5, 0.2, 20.0);
-        WorldServer world = ((CraftWorld) location.getWorld()).getHandle();
-        world.addEntity(customWorm);
+    public void spawnWorm(Location location, CreatureSpawnEvent.SpawnReason spawnReason) {
+        Worm customWorm = new Worm(location, 5, 20.0);
+        ServerLevel nmsWorld = (ServerLevel) MinecraftReflection.getNMSWorld(location.getWorld());
+
+        WormSpawnEvent wormSpawnEvent = new WormSpawnEvent(customWorm);
+        Bukkit.getPluginManager().callEvent(wormSpawnEvent);
+
+        if (wormSpawnEvent.isCancelled()) {
+            return;
+        }
+        nmsWorld.addEntity(customWorm, spawnReason);
         worms.add(customWorm);
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> customWorm.setInvisible(true), 10);
 
     }
 
-    public void killWorm(Worm worm) {
+    public void killWorm(Worm worm, Entity killer) {
+        WormKillEvent wormKillEvent = new WormKillEvent(worm, killer);
+        Bukkit.getPluginManager().callEvent(wormKillEvent);
+
+        if (wormKillEvent.isCancelled()) {
+            return;
+        }
         worm.killWorm();
         worms.remove(worm);
     }
