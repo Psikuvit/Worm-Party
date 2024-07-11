@@ -5,7 +5,6 @@ import com.mojang.authlib.properties.Property;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -48,21 +47,6 @@ public class Utils {
         return ChatColor.translateAlternateColorCodes('&', msg);
     }
 
-    public static String secToMin(int seconds) {
-        int minutes = seconds / 60;
-        int remainingSeconds = seconds % 60;
-        return String.format("%d:%02d", minutes, remainingSeconds);
-    }
-
-    public static void sendTitle(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
-        player.sendTitle(
-                color(title),
-                color(subtitle),
-                fadeIn,
-                stay,
-                fadeOut
-        );
-    }
 
     public static List<ItemStack> rewards() {
         ItemStack helmet = new ItemStack(Material.DIAMOND_HELMET);
